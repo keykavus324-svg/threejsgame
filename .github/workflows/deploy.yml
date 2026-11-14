@@ -38,6 +38,9 @@ jobs:
           echo "dist OK:" && ls -la dist
 
       - uses: actions/configure-pages@v5
+        with:
+          # Repo Pages kapalıysa workflow token'ı (pages: write) ile otomatik aç
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
