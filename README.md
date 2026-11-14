@@ -154,6 +154,20 @@ node tools/glbtest.mjs     # 25 GLB → yükle + bake, üçgen sayıları ve piv
 node tools/smoke.mjs       # tüm oyun sistemlerini 420 frame simüle et (iki faz, RPG-29 dâhil)
 ```
 
+## Canlı site (GitHub Pages)
+
+Kök `vite.config.js` göreli yol (`base: './'`) ve `.github/workflows/deploy.yml`
+(pages + workflow) hazırdır. Yayın için **tek seferlik 1 tıklık ayar** gerekir:
+
+1. Repo → **Settings** → **Pages** (sol menüde "Code and automation" altında)
+2. **Build and deployment → Source**: `GitHub Actions` seçin
+3. **Actions** sekmesinden **Deploy to GitHub Pages**'i **Run workflow** ile çalıştırın
+   (veya bu dala herhangi bir push — otomatik çalışır)
+4. Site: **https://keykavus324-svg.github.io/threejsgame/**
+
+> Not: Sayfa ilk açılışta ~15 MB GLB model kiti indirir; oyun ilk kez yüklendiğinde
+> loading ekranı biraz sürebilir (sonraki açılışlar tarayıcı önbelleğinden hızlıdır).
+
 ## Rust çekirdek (`rust/iron-horizon-core/`)
 
 Oyun mantığının saf Rust, sıfır bağımlılıklı, headless-test edilebilir karşılığı:
