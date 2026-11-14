@@ -188,14 +188,14 @@ kbd{font:600 10px/1 var(--mono);color:var(--amber);border:1px solid var(--line);
 #start-btn i,#resume-btn i,#again-btn i{font-style:normal;font-size:19px}
 .menu-foot{font:500 9px var(--mono);letter-spacing:.1em;color:var(--dim)}
 
-#loading{background:linear-gradient(rgba(3,7,9,.74),rgba(3,7,9,.93)),url('/hero.png') center/cover no-repeat;z-index:80}
+#loading{background:linear-gradient(rgba(3,7,9,.74),rgba(3,7,9,.93)),url('../hero.png') center/cover no-repeat;z-index:80}
 .load-box{width:min(420px,86vw);text-align:center;background:rgba(4,8,10,.55);border:1px solid var(--line);padding:34px 30px;backdrop-filter:blur(4px)}
 .load-title{font:800 15px var(--mono);letter-spacing:.34em;color:var(--amber);margin-bottom:18px}
 .load-bar{height:3px;background:rgba(255,255,255,.1);overflow:hidden}
 #load-fill{height:100%;width:0%;background:var(--amber);box-shadow:0 0 14px var(--amber);transition:width .25s}
 .load-step{font:600 9px var(--mono);letter-spacing:.18em;color:var(--dim);margin-top:12px}
 
-#pause,#end{background:linear-gradient(rgba(3,6,8,.86),rgba(3,6,8,.9)),url('/hero.png') center/cover no-repeat;backdrop-filter:blur(8px);z-index:70}
+#pause,#end{background:linear-gradient(rgba(3,6,8,.86),rgba(3,6,8,.9)),url('../hero.png') center/cover no-repeat;backdrop-filter:blur(8px);z-index:70}
 .pause-box,.end-box{text-align:center;width:min(520px,90vw);border:1px solid var(--line);background:rgba(8,13,15,.92);padding:34px 36px}
 .pause-box h2,.end-box h2{font:900 58px var(--cond);letter-spacing:.1em;color:var(--amber-hi);margin:8px 0 22px}
 .pause-box button,.end-box button{display:block;margin:10px auto 0;pointer-events:auto}
