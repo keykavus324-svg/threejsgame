@@ -154,6 +154,18 @@ node tools/glbtest.mjs     # 25 GLB → yükle + bake, üçgen sayıları ve piv
 node tools/smoke.mjs       # tüm oyun sistemlerini 420 frame simüle et (iki faz, RPG-29 dâhil)
 ```
 
+## Rust çekirdek (`rust/iron-horizon-core/`)
+
+Oyun mantığının saf Rust, sıfır bağımlılıklı, headless-test edilebilir karşılığı:
+silah verileri + hasar falloff'u, kare hızından bağımsız tetik, TTK tablosu
+(`cargo run --bin ttk-table`), A*/NavGrid, spatial hash, AI tepki/baskı modeli,
+dalga direktörü, MCOM uplink, görev/bilet orkestrasyonu ve kayıt/ilerleme.
+
+> Dürüst kayıt: bu çekirdek sandbox'ta derleyici olmadan yazıldı; tree-sitter
+> sözdizimi denetimi + A* ve atış aritmetiği Python eşleniğiyle çapraz kontrol
+> edildi. `cargo test` çalıştırılmadı. Ayrıntılar ve komutlar:
+> [`rust/iron-horizon-core/README.md`](rust/iron-horizon-core/README.md).
+
 ## Bilinen sınırlar
 
 - Tarayıcı/iFrame `pointer lock` izni vermezse oyun otomatik olarak "serbest imleçle nişan" kipine

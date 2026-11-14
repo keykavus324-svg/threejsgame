@@ -1,0 +1,22 @@
+[package]
+name = "iron-horizon-core"
+version = "0.1.0"
+edition = "2021"
+description = "DEMİR UFUK — saf Rust deterministik simülasyon çekirdeği (headless, sıfır bağımlılık)"
+license = "MIT"
+
+# Bilinçli olarak dependencies yok: crates.io erişimi olmayan ortamlarda bile
+# yalnızca rustc ile derlenir. Render katmanı (Bevy vb.) ayrı crate olarak
+# gelecek sürümlerde eklenecek.
+
+[lib]
+name = "iron_horizon_core"
+path = "src/lib.rs"
+
+[[bin]]
+name = "ttk-table"
+path = "src/bin/ttk_table.rs"
+
+[profile.release]
+opt-level = 3
+debug = true
