@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>DEMİR UFUK — OPERASYON KIRLI ŞAFAK</title>
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<canvas id="viewport"></canvas>
+<canvas id="flare-canvas"></canvas>
+<div id="debug-overlay" class="hidden"></div>
+
+<!-- ======================== IN-GAME HUD ======================== -->
+<div id="hud" class="hidden">
+  <div class="hud-scan"></div>
+  <div class="hud-noise"></div>
+
+  <div id="damage-vignette"></div>
+  <div id="heal-vignette"></div>
+  <div id="scope" class="hidden">
+    <div class="scope-ring"></div>
+    <div class="scope-reticle"><i></i><i></i><i></i><i></i><b></b></div>
+    <div class="scope-mil"></div>
+  </div>
+
+  <div id="crosshair">
+    <span class="ch ch-t"></span><span class="ch ch-b"></span>
+    <span class="ch ch-l"></span><span class="ch ch-r"></span>
+    <span class="ch-dot"></span>
+  </div>
+  <div id="hitmarker"><i></i><i></i><i></i><i></i></div>
+  <div id="killconfirm">İSABET</div>
+
+  <!-- top bar -->
+  <div class="topbar">
+    <div class="mission-block">
+      <div class="label">GÖREV / OPERASYON</div>
+      <div class="value">KIRLI ŞAFAK</div>
+      <div class="sub" id="mission-sub">BÖLGELERİ SAVUN · DALGALARI PUSSUR</div>
+    </div>
+    <div class="wave-block">
+      <div class="wave-top"><span id="wave-num">DALGA 01</span><span class="sep">/</span><span>06</span></div>
+      <div class="wave-bar"><div id="wave-fill"></div></div>
+      <div class="wave-sub" id="wave-sub">DÜŞMAN TEMASI BEKLENİYOR</div>
+    </div>
+    <div class="ticket-block">
+      <div class="ticket-row"><span class="dot blue"></span><span>MÜTTEFİK</span><b id="tickets-ally">300</b></div>
+      <div class="ticket-row"><span class="dot red"></span><span>DÜŞMAN</span><b id="tickets-enemy">0</b></div>
+    </div>
+  </div>
+
+  <!-- capture points -->
+  <div id="objectives"></div>
+
+  <!-- killfeed -->
+  <div id="killfeed"></div>
+
+  <!-- center message -->
+  <div id="center-msg"></div>
+
+  <!-- minimap -->
+  <div class="minimap-wrap">
+    <div class="minimap-head"><span>TACTICAL / TAKTİK HARİTA</span><span id="minimap-coord">000 · 000</span></div>
+    <canvas id="minimap" width="220" height="220"></canvas>
+    <div class="minimap-foot"><span>▲ KUZEY</span><span id="minimap-scale">R 160m</span></div>
+  </div>
+
+  <!-- bottom left: vitals -->
+  <div class="vitals">
+    <div class="vitals-head"><span class="label">PERSONEL DURUMU</span><span id="player-state">MUHARİP</span></div>
+    <div class="health-row"><div class="health-icon">✚</div><div class="health-bar"><div id="health-fill"></div></div><b id="health-num">100</b></div>
+    <div class="stamina-bar"><div id="stamina-fill"></div></div>
+    <div class="gear-row">
+      <div class="gear" id="gear-med"><b>F</b><span>İLK YARDIM</span><em id="med-count">2</em></div>
+      <div class="gear" id="gear-air"><b>Q</b><span>HAVA DESTEĞİ</span><em id="air-count">Hazır</em></div>
+      <div class="gear" id="gear-nade"><b>G</b><span>EL BOMBASI</span><em id="nade-count">3</em></div>
+    </div>
+  </div>
+
+  <!-- bottom right: weapon -->
+  <div class="weapon-panel">
+    <div class="wp-meta"><span id="wp-class">SALDIRI TÜFEĞİ</span><span id="wp-fire">TAM OTOMATİK</span></div>
+    <div class="wp-name" id="wp-name">AR-12 KESTREL</div>
+    <div class="wp-ammo"><b id="ammo-mag">30</b><span>/</span><em id="ammo-res">180</em></div>
+    <div class="wp-slots"><div class="slot active" id="slot-1">1<i></i></div><div class="slot" id="slot-2">2<i></i></div></div>
+    <div class="wp-hint" id="wp-hint">R · ŞARJÖR &nbsp;|&nbsp; SAĞ TIK · NİŞAN</div>
+  </div>
+
+  <div class="bottom-center">
+    <div id="interact" class="hidden">[ E ] <span>ARAÇA BİN</span></div>
+    <div id="vehicle-hud" class="hidden">
+      <span class="label">KALKAN-9 / ANA MUHAREBE TANKI</span>
+      <div class="vehicle-bar"><div id="tank-hp"></div></div>
+      <div class="vehicle-row"><span>ANA TOP <b id="tank-reload">HAZIR</b></span><span>HIZ <b id="tank-speed">0</b> km/s</span></div>
+    </div>
+  </div>
+
+  <div id="score-line">PUAN <b id="score">0</b> <span>·</span> ÖLDÜRME <b id="kills">0</b> <span>·</span> İSABET <b id="accuracy">0%</b> <span>·</span> RÜTBE <b id="rank">ER · 1</b></div>
+  <div id="fps-counter"></div>
+  <div id="damage-arrows"></div>
+</div>
+
+<!-- ======================== MENUS ======================== -->
+<div id="menu" class="overlay">
+  <div class="menu-grid"></div>
+  <div class="menu-inner">
+    <div class="menu-top">
+      <div class="brand">
+        <div class="brand-mark">▲</div>
+        <div><div class="brand-1">DEMİR UFUK</div><div class="brand-2">IRON HORIZON</div></div>
+      </div>
+      <div class="build-tag">BLENDER 4.5 LTS &nbsp;·&nbsp; THREE.JS r187 &nbsp;·&nbsp; PROCEDURAL / WEBGL2</div>
+    </div>
+
+    <div class="menu-title">
+      <div class="eyebrow">OPERASYON 07 — 14 KASIM, ŞAFAK ÖNCESİ</div>
+      <h1>KIRLI<br /><span>ŞAFAK</span></h1>
+      <div class="rule"></div>
+      <p class="brief">
+        Vadi düştü. Üç kontrol noktası, altı dalga, tek bir mühimmat hattı.<br />
+        Kalkan-9 hâlâ çalışıyor. Gökyüzü senin. Bölgeyi geri al.
+      </p>
+    </div>
+
+    <div class="menu-panels">
+      <div class="panel">
+        <div class="panel-head">GÖREV BRİFİNGİ</div>
+        <ul>
+          <li><b>A / KIRIK KULE</b><span>Radar sahası · yüksek zemin</span></li>
+          <li><b>B / HANGAR 7</b><span>Merkez · ağır temas</span></li>
+          <li><b>C / GEÇİT</b><span>Konvoy yolu · tanksavar</span></li>
+        </ul>
+        <div class="panel-note">Düşman biletleri tükenene kadar dayan. Her ölüm 5 bilete mal olur.</div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">KONTROLLER</div>
+        <div class="keys">
+          <div><kbd>W A S D</kbd><span>Hareket</span></div>
+          <div><kbd>SHIFT</kbd><span>Koşu</span></div>
+          <div><kbd>CTRL</kbd><span>Çömel</span></div>
+          <div><kbd>SOL TIK</kbd><span>Ateş</span></div>
+          <div><kbd>SAĞ TIK</kbd><span>Nişan al</span></div>
+          <div><kbd>R</kbd><span>Şarjör</span></div>
+          <div><kbd>1 / 2</kbd><span>Silah</span></div>
+          <div><kbd>G</kbd><span>Bomba</span></div>
+          <div><kbd>Q</kbd><span>Hava desteği</span></div>
+          <div><kbd>F</kbd><span>İlk yardım</span></div>
+          <div><kbd>E</kbd><span>Tanka bin / in</span></div>
+          <div><kbd>ESC</kbd><span>Duraklat</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">SİSTEM</div>
+        <label class="setting"><span>ZORLUK</span><select id="opt-diff"><option value="0">ACEMİ</option><option value="1" selected>MUHARİP</option><option value="2">CEHENNEM</option></select></label>
+        <label class="setting"><span>GRAFİK</span><select id="opt-quality"><option value="0">DÜŞÜK</option><option value="1">ORTA</option><option value="2" selected>YÜKSEK</option><option value="3">ULTRA</option></select></label>
+        <label class="setting"><span>FARE HASSASİYETİ</span><input id="opt-sens" type="range" min="30" max="220" value="100" /><i id="sens-val">1.00</i></label>
+        <label class="setting"><span>SES</span><input id="opt-vol" type="range" min="0" max="100" value="70" /><i id="vol-val">70</i></label>
+        <div class="panel-note">İpucu: Tankın ana topu düşman dalgalarını tek atışta dağıtır. Hava desteğini kalabalığa sakla.</div>
+      </div>
+    </div>
+
+    <div class="menu-bottom">
+      <button id="start-btn"><span>GÖREVE BAŞLA</span><i>→</i></button>
+      <div id="menu-prog"></div>
+      <div class="menu-foot">Tüm modeller, dokular, sesler ve efektler sıfırdan üretildi · Harici asset yok</div>
+    </div>
+  </div>
+</div>
+
+<div id="loading" class="overlay hidden">
+  <div class="load-box">
+    <div class="load-title">SAHA HAZIRLANIYOR</div>
+    <div class="load-bar"><div id="load-fill"></div></div>
+    <div class="load-step" id="load-step">BLENDER KİTİ YÜKLENİYOR…</div>
+  </div>
+</div>
+
+<div id="pause" class="overlay hidden">
+  <div class="pause-box">
+    <div class="eyebrow">OPERASYON DURAKLATILDI</div>
+    <h2>MOLA</h2>
+    <button id="resume-btn">DEVAM ET</button>
+    <button id="restart-btn" class="ghost">GÖREVİ YENİDEN BAŞLAT</button>
+    <div class="pause-keys">ESC · devam &nbsp;|&nbsp; Fare imleci serbest</div>
+  </div>
+</div>
+
+<div id="end" class="overlay hidden">
+  <div class="end-box">
+    <div class="eyebrow" id="end-eyebrow">GÖREV TAMAMLANDI</div>
+    <h2 id="end-title">BÖLGE GÜVENLİ</h2>
+    <p id="end-text"></p>
+    <div class="end-stats">
+      <div><span>PUAN</span><b id="end-score">0</b></div>
+      <div><span>ÖLDÜRME</span><b id="end-kills">0</b></div>
+      <div><span>KAFADAN</span><b id="end-heads">0</b></div>
+      <div><span>İSABET</span><b id="end-acc">0%</b></div>
+      <div><span>SÜRE</span><b id="end-time">0:00</b></div>
+    </div>
+    <div id="end-xp"></div>
+    <button id="again-btn">TEKRAR DENE</button>
+  </div>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
